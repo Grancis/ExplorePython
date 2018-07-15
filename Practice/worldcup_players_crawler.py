@@ -38,10 +38,10 @@ class Player(object):
 
 def player2dict(player):
     return{
-        'team':player.team,
-        'name':player.name,
-        'age':player.age,
-        'number':player.number
+        "team":player.team,
+        "name":player.name,
+        "age":player.age,
+        "number":player.number
     }
 
 class TeamUrlParesr(HTMLParser):
@@ -130,12 +130,22 @@ def getAllPlayerList(urls):
 
 # print(getAllPlayerList(team_urls))
 
-#导出到文件
+#导出到文件到当前目录的 worldcup_players.json
+#bug:json序列化时法语拼写会乱码
+# all_players=getAllPlayerList(team_urls)
+# with open('./worldcup_players.json','w',encoding='utf-8') as f:
+#     for players in all_players:
+#         for player in players:
+#             f.write(json.dumps(player,default=player2dict))   
+#             f.write('\n')
+
+
+#采用手动拼接json的方法
 all_players=getAllPlayerList(team_urls)
-with open('./worldcup_players.json','w',encoding='utf8') as f:
+with open('./worldcup_players.json','w',encoding='utf-8') as f:
     for players in all_players:
         for player in players:
-            f.write(json.dumps(player,default=player2dict))
+            f.write('{\"team\":%s,\"name\":%s,\"age\":%s}' %(player.team,player.name,player.age))
             f.write('\n')
 
 #test
@@ -144,3 +154,5 @@ with open('./worldcup_players.json','w',encoding='utf8') as f:
 # for p in players:
 #     print(p)
 #     print('\n')
+
+

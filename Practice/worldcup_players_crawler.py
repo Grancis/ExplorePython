@@ -10,6 +10,15 @@ import requests
 from html.parser import HTMLParser
 import json
 import re
+import logging
+import sys
+
+#配置log
+logger=logging.getLogger()
+formatter=logging.Formatter('%(asctime)s %(levelname)-8s:     %(message)s')
+console_handler=logging.StreamHandler(sys.stdout)
+logger.addHandler(console_handler)
+logger.setLevel(logging.INFO)
 
 #爬取所有国家队的url
 team_urls=[]
@@ -109,13 +118,17 @@ class PlayerParser(HTMLParser):
 #return Player[]
 def getPlayerList(url):
     players=[]
+    logger.info('starting at %s' %url)
     res=requests.get(url)
     parser=PlayerParser()
     parser.feed(res.text)
     team=parser.team
+    logger.info('team: %s' %team)
     for i in range(len(parser.name)-1):
         player=Player(team,parser.name[i],parser.age[i],parser.num[i])
+        logger.info('player: %s' %player.name)
         players.append(player)
+    logger.info('got all players in %s' %team)
     return players
 
 #循环解析出所有国家的player信息
@@ -151,14 +164,14 @@ def get_json(all_players):
                 # f.write('|%s&%s%%%s@' %(player.team,player.name,player.age))
                 f.write('\n')
 
-def get_sql_script():
+def get_sql_script(all_players):
     with open('./worldcup_players.sql','w',encoding='utf-8') as f:
         for players in all_players:
             for player in players:
                 f.write('INSERT INTO player(player_Name,player_Team,player_age,player_Number) VALUES(\"%s\",\"%s\",%d,%d);' %(player.name,player.team,int(player.age),int(player.number)))
                 f.write('\n')
 
-get_sql_script()
+get_json(all_players)
 #test
 # print(team_urls[-1])
 # players=getPlayerList(team_urls[-1])

@@ -142,12 +142,23 @@ def getAllPlayerList(urls):
 
 #采用手动拼接json的方法
 all_players=getAllPlayerList(team_urls)
-with open('./worldcup_players.json','w',encoding='utf-8') as f:
-    for players in all_players:
-        for player in players:
-            f.write('{\"team\":%s,\"name\":%s,\"age\":%s}' %(player.team,player.name,player.age))
-            f.write('\n')
+def get_json(all_players):
+    with open('./worldcup_players.json','w',encoding='utf-8') as f:
+        for players in all_players:
+            for player in players:
+                f.write('{\"team\":\"%s\",\"name\":\"%s\",\"age\":\"%s\",\"number\":\"%s\"}' %(player.team,player.name,player.age,player.number))
+                #傻大格式
+                # f.write('|%s&%s%%%s@' %(player.team,player.name,player.age))
+                f.write('\n')
 
+def get_sql_script():
+    with open('./worldcup_players.sql','w',encoding='utf-8') as f:
+        for players in all_players:
+            for player in players:
+                f.write('INSERT INTO player(player_Name,player_Team,player_age,player_Number) VALUES(\"%s\",\"%s\",%d,%d);' %(player.name,player.team,int(player.age),int(player.number)))
+                f.write('\n')
+
+get_sql_script()
 #test
 # print(team_urls[-1])
 # players=getPlayerList(team_urls[-1])
